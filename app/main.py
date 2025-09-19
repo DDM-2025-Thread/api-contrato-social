@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from app.database import Base, engine
-import app.models.user
+import app.models.model
 
 app = FastAPI()
 
