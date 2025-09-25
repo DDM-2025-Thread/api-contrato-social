@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum
 from sqlalchemy.orm import relationship, mapped_column
-from datetime import datetime
+from sqlalchemy.sql import func
 from app.database import Base
 from app.models.enum import ApiKeyStatus, BillingStatus
 
@@ -11,8 +11,10 @@ class User(Base):
     name = mapped_column(String(150))
     email = Column(String(150), unique=True, index=True)
     password_hash = Column(String(255))
-    created_at = Column(DateTime, default=datetime.utcnow)
-    api_key = relationship("ApiKey", back_populates="User")
+    api_keys = relationship("ApiKey", back_populates="user")
+    created_at = Column(DateTime, default=func.now())
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
+    deleted_at = Column(DateTime, nullable=True)
 
 class ApiKey(Base):
     __tablename__ = "api_keys"
@@ -22,7 +24,9 @@ class ApiKey(Base):
     User = relationship("User", back_populates="api_keys")
     key = Column(String(150), unique=True)
     status = Column(Enum(ApiKeyStatus), default=ApiKeyStatus.ACTIVE)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=func.now())
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
+    deleted_at = Column(DateTime, nullable=True)
 
 class UsageLog(Base):
     __tablename__ = "usage_logs"
@@ -30,7 +34,7 @@ class UsageLog(Base):
     id = mapped_column(Integer, primary_key=True, index=True)
     user_id = mapped_column(ForeignKey("users.id"), nullable=False)
     endpoint = Column(String(255))
-    timestamp = Column(DateTime, default=datetime.utcnow)
+    timestamp = Column(DateTime, default=func.now())
     cost = Column(Integer)
 
 class Billing(Base):
