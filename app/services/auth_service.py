@@ -1,14 +1,13 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from app.repositories.user_repository import UserRepository
-from app.repositories.api_keys_repository import ApiKeysRepository
-from app.core.security import hash_password, verify_password, generate_api_key
+from app.core.security import hash_password, verify_password
+from app.core.jwt import create_access_token
 
 class AuthService:
     def __init__(self, db: Session):
         self.db = db
         self.user_repo = UserRepository(db)
-        self.api_key_repo = ApiKeysRepository(db)
 
     def register(self, name: str, email: str, password: str):
         if self.user_repo.find_by_email(email):
@@ -23,16 +22,13 @@ class AuthService:
         if not new_user:
             raise HTTPException(status_code=500, detail="Erro ao criar usuário")
 
-        api_key = self.api_key_repo.create({
-            "user_id": new_user.id,
-            "key": generate_api_key()
-        })
+        access_token = create_access_token(data={"sub": new_user.email}, scope="user")
 
         return {
             "message": "Usuário registrado com sucesso",
             "name": new_user.name,
             "email": new_user.email,
-            "api_key": api_key.key
+            "token": access_token
         }
 
     def login(self, email: str, password: str):
@@ -43,4 +39,6 @@ class AuthService:
         if not verify_password(password, str(user.password_hash)):
             raise HTTPException(status_code=400, detail="Senha incorreta")
 
-        return {"message": "Login realizado com sucesso"}
+        access_token = create_access_token(data={"sub": user.email}, scope="user")
+        
+        return {"message": "Login realizado com sucesso", "token": access_token}
