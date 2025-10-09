@@ -10,7 +10,7 @@ class ApiKeysService:
         self.repository = ApiKeysRepository(db)
         self.user_repository = UserRepository(db)
 
-    def create_api_key(self, user_email: str):
+    def create_api_key(self, apikey_data, user_email: str):
         user = self.user_repository.find_by_email(user_email)
         if not user:
             raise Exception("Usuário não encontrado.")
@@ -22,6 +22,7 @@ class ApiKeysService:
         new_key = generate_api_key()
         self.repository.create({
             "user_id": user.id,
+            "name": apikey_data.name,
             "key": new_key
         })
         
@@ -29,5 +30,24 @@ class ApiKeysService:
             "message": "API Key gerada com sucesso.",
             "data": {
                 "api_key": new_key
+            }
+        }
+
+    def list_api_keys(self, user_email: str):
+        user = self.user_repository.find_by_email(user_email)
+        if not user:
+            raise Exception("Usuário não encontrado.")
+
+        keys = self.repository.find_by_user_id(user.id)
+        return {
+            "message": "Lista de API Keys.",
+            "data": {
+                "api_keys": [
+                    {
+                        "name": key.name,
+                        "created_at": key.created_at
+                    }
+                    for key in keys
+                    ]
             }
         }
