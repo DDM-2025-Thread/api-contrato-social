@@ -22,6 +22,7 @@ class ApiKey(Base):
     id = mapped_column(Integer, primary_key=True, index=True)
     user_id = mapped_column(ForeignKey("users.id"), nullable=False)
     user = relationship("User", back_populates="api_keys")
+    name = Column(String(100))
     key = Column(String(255), unique=True)
     status = Column(Enum(ApiKeyStatus), default=ApiKeyStatus.ACTIVE)
     created_at = Column(DateTime, default=func.now())
