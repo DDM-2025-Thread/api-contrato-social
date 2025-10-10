@@ -7,13 +7,13 @@ from app.core.jwt import create_access_token
 class AuthService:
     def __init__(self, db: Session):
         self.db = db
-        self.user_repo = UserRepository(db)
+        self.user_repository = UserRepository(db)
 
     def register(self, name: str, email: str, password: str):
-        if self.user_repo.find_by_email(email):
+        if self.user_repository.find_by_email(email):
             raise HTTPException(status_code=400, detail="Usuário já existe")
 
-        new_user = self.user_repo.create({
+        new_user = self.user_repository.create({
             "name": name,
             "email": email,
             "password_hash": hash_password(password)
@@ -32,7 +32,7 @@ class AuthService:
         }
 
     def login(self, email: str, password: str):
-        user = self.user_repo.find_by_email(email)
+        user = self.user_repository.find_by_email(email)
         if not user:
             raise HTTPException(status_code=400, detail="Usuário não encontrado")
 
