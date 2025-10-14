@@ -41,4 +41,8 @@ class AuthService:
 
         access_token = create_access_token(data={"sub": user.email}, scope="user")
         
-        return {"message": "Login realizado com sucesso", "token": access_token}
+        return {
+            "id": user.id,
+            "name": user.name,
+            "token": access_token
+        }
