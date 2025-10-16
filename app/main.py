@@ -23,7 +23,7 @@ origins_config = {
 }
 
 if ENVIRONMENT == "development":
-    origins_config["allow_origins_regex"] = r"http://localhost:\d+"
+    origins_config["allow_origins"] = '*'
 else:
     origins_config["allow_origins"] = [
         "https://seusite.com.br",
