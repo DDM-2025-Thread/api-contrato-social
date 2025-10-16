@@ -19,7 +19,8 @@ class LoginRequest(BaseModel):
     password: str
 
 class LoginResponse(BaseModel):
-    message: str
+    id: int
+    name: str
     token: str
 
     class Config:
