@@ -2,6 +2,7 @@ from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Optional, Dict, Any
 from app.models.model import ChatTicket
+from app.models.enum import TicketStatus
 
 
 class ChatRepository:
@@ -18,9 +19,9 @@ class ChatRepository:
         await self.db.refresh(chat_ticket)
         return chat_ticket
 
-    async def update_status(self, ticket: str, status: str, error_message: Optional[str] = None) -> None:
+    async def update_status(self, ticket: str, status: TicketStatus, error_message: Optional[str] = None) -> None:
         stmt = update(ChatTicket).where(ChatTicket.ticket_uuid == ticket).values(
-            status=status,
+            status=status.value,
             error_message=error_message
         )
         await self.db.execute(stmt)
