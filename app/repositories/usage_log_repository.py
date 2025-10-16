@@ -1,4 +1,4 @@
- from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session
 from app.models.model import UsageLog
 from typing import Optional, List
 
