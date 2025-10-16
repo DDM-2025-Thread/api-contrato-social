@@ -9,3 +9,9 @@ class BillingStatus(str, Enum):
     PENDING = "pending"
     COMPLETED = "completed"
     FAILED = "failed"
+
+class TicketStatus(str, Enum):
+    PROCESSING = "Processing"
+    COMPLETED = "Completed"
+    FAILED = "Failed"
+    PENDING = "Pending"
