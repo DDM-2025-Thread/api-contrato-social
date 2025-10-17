@@ -1,8 +1,9 @@
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum, Text
 from sqlalchemy.orm import relationship, mapped_column
 from sqlalchemy.sql import func
 from app.database import Base
-from app.models.enum import ApiKeyStatus, BillingStatus
+from app.models.enum import ApiKeyStatus, BillingStatus, TicketStatus
+
 
 class User(Base):
     __tablename__ = "users"
@@ -15,6 +16,7 @@ class User(Base):
     created_at = Column(DateTime, default=func.now())
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
     deleted_at = Column(DateTime, nullable=True)
+
 
 class ApiKey(Base):
     __tablename__ = "api_keys"
@@ -29,6 +31,7 @@ class ApiKey(Base):
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
     deleted_at = Column(DateTime, nullable=True)
 
+
 class UsageLog(Base):
     __tablename__ = "usage_logs"
 
@@ -37,6 +40,7 @@ class UsageLog(Base):
     endpoint = Column(String(255))
     timestamp = Column(DateTime, default=func.now())
     cost = Column(Integer)
+
 
 class Billing(Base):
     __tablename__ = "billings"
@@ -47,3 +51,14 @@ class Billing(Base):
     total_requests = Column(Integer)
     total_cost = Column(Integer)
     status = Column(Enum(BillingStatus), default=BillingStatus.PENDING)
+
+
+class ChatTicket(Base):
+    __tablename__ = "chat_ticket"
+
+    id = mapped_column(Integer, primary_key=True, index=True)
+    ticket_uuid = Column(String(36), unique=True, nullable=False)
+    status = Column(Enum(TicketStatus), default=TicketStatus.PROCESSING, nullable=False)
+    response_json = Column(Text, nullable=True)
+    error_message = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=func.now())
