@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
-from app.models.model import User
 from typing import Optional, List
+from app.models.model import User
+from app.models.enum import UserStatus
 
 class UserRepository:
     def __init__(self, db: Session):
@@ -36,5 +37,14 @@ class UserRepository:
         if user:
             self.db.delete(user)
             self.db.commit()
+            return True
+        return False
+
+    def soft_delete(self, user_id: int) -> bool:
+        user = self.find_by_id(user_id)
+        if user:
+            user.status = UserStatus.INACTIVE
+            self.db.commit()
+            self.db.refresh(user)
             return True
         return False

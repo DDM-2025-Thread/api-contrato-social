@@ -36,4 +36,14 @@ class UserService:
         return {
             "message": "Usuário atualizado com sucesso"
         }
+    
+    def soft_delete(self, username: str):
+        user = self.user_repository.find_by_email(username)
+        if not user:
+            raise Exception("Usuário não encontrado")
+        
+        self.user_repository.soft_delete(user.id)
+        return {
+            "message": "Usuário deletado com sucesso"
+        }
 

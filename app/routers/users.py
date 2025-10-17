@@ -16,3 +16,7 @@ def find_one(user=Depends(get_current_user), db: Session = Depends(get_db)):
 def update(user_update: UserUpdateRequest, user=Depends(get_current_user), db: Session = Depends(get_db)):
     print(user_update)
     return UserService(db).update(user["username"], user_update)
+
+@router.delete("/me", response_model=GenericResponse)
+def delete(user=Depends(get_current_user), db: Session = Depends(get_db)):
+    return UserService(db).soft_delete(user["username"])
