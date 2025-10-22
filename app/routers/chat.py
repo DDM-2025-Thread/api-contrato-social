@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Depends, UploadFile, File, BackgroundTasks
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.database import get_db
-from app.database.dependencies import get_async_session
+from app.database import get_async_session
 from app.services.chat_service import ChatService
 from typing import Annotated
 
