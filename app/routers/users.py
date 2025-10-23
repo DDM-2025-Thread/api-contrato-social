@@ -20,3 +20,11 @@ def update(user_update: UserUpdateRequest, user=Depends(get_current_user), db: S
 @router.delete("/me", response_model=GenericResponse)
 def delete(user=Depends(get_current_user), db: Session = Depends(get_db)):
     return UserService(db).soft_delete(user["username"])
+
+# ==============================================================
+# === Endpoints de Admin (Temporariamente sem proteção de role) ===
+# ==============================================================
+
+@router.delete("/{user_id}", response_model=GenericResponse)
+def hard_delete(user_id: int, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+    return UserService(db).hard_delete(user_id)

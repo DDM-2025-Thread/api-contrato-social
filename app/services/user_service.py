@@ -46,4 +46,10 @@ class UserService:
         return {
             "message": "Usuário deletado com sucesso"
         }
-
+    
+    def hard_delete(self, user_id: int):
+        ok = self.user_repository.delete(user_id)
+        if not ok:
+            raise Exception("Usuário não encontrado")
+        
+        return {"message": f"Usuário com ID {user_id} foi permanentemente removido."}
