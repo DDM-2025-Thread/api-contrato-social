@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from datetime import datetime, timezone
 from typing import Optional, List
 from app.models.model import User
 from app.models.enum import UserStatus
@@ -43,8 +44,11 @@ class UserRepository:
     def soft_delete(self, user_id: int) -> bool:
         user = self.find_by_id(user_id)
         if user:
-            user.status = UserStatus.INACTIVE
+            now = datetime.now(timezone.utc)
+            self.db.query(User).filter(User.id == user_id).update({
+                "status": UserStatus.INACTIVE,
+                "deleted_at": now
+            })
             self.db.commit()
-            self.db.refresh(user)
             return True
         return False

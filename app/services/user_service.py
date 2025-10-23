@@ -1,6 +1,7 @@
 from fastapi import HTTPException, status
 from app.repositories.user_repository import UserRepository
 from app.schemas.user_schema import UserUpdateRequest
+from app.models.enum import UserStatus
 
 class UserService:
     def __init__(self, db):
@@ -53,3 +54,17 @@ class UserService:
             raise Exception("Usuário não encontrado")
         
         return {"message": f"Usuário com ID {user_id} foi permanentemente removido."}
+
+    def reactivate(self, user_id: int):
+        user = self.user_repository.find_by_id(user_id)
+        if not user:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuário não encontrado")
+
+        update_data = {
+            "status": UserStatus.ACTIVE,
+            "deleted_at": None
+        }
+
+        self.user_repository.update(user_id, update_data) 
+        
+        return {"message": f"Usuário com ID {user_id} foi reativado."}

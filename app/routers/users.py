@@ -28,3 +28,7 @@ def delete(user=Depends(get_current_user), db: Session = Depends(get_db)):
 @router.delete("/{user_id}", response_model=GenericResponse)
 def hard_delete(user_id: int, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
     return UserService(db).hard_delete(user_id)
+
+@router.patch("/{user_id}/reactivate", response_model=GenericResponse)
+def reactivate(user_id: int, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+    return UserService(db).reactivate(user_id)
