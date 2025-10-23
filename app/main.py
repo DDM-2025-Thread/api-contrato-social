@@ -1,11 +1,17 @@
 import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.database import Base, engine
+#from app.database import Base, engine
 from app.models.model import *
-from app.routers import auth, users, apikeys, usage, billing
+from app.routers import auth, users, apikeys, usage, billing, chat
+from app.database import init_db
 
 app = FastAPI(title="API Contratos Sociais")
+
+# método adicionado
+@app.on_event("startup")
+async def startup_event():
+    await init_db()
 
 ENVIRONMENT = os.getenv("ENVIRONMENT", "production")
 
@@ -13,7 +19,7 @@ origins_config = {
     "allow_credentials": True,
     "allow_methods": ["GET", "POST", "PUT", "DELETE"],
     "allow_headers": [
-        "Authorization", 
+        "Authorization",
         "Content-Type",
         "Accept",
         "Origin",
@@ -31,13 +37,15 @@ else:
     ]
 app.add_middleware(CORSMiddleware, **origins_config)
 
-Base.metadata.create_all(bind=engine)
+# Base.metadata.create_all(bind=engine)
 
 app.include_router(auth.router)
 app.include_router(users.router)
 app.include_router(apikeys.router)
 app.include_router(usage.router)
 app.include_router(billing.router)
+app.include_router(chat.router)
+
 
 @app.get("/")
 def root():
