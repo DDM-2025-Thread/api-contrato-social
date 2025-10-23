@@ -4,7 +4,7 @@ from app.schemas.social_contract_squema import ContratoSocial
 import os
 import uuid
 from io import BytesIO
-
+import json
 
 class GeminiService:
     def __init__(self, api_key: str):
@@ -36,6 +36,7 @@ class GeminiService:
                     response_schema=ContratoSocial,
                 )
             )
-            return response.text
-        finally:
-            self.client.files.delete(name=uploaded_file.name)
+            return json.loads(response.text)
+        except json.JSONDecodeError as e:
+             print(f"Erro ao analisar o JSON do Gemini: {e}")
+             raise ValueError(f"Resposta inválida do modelo: {response.text}") from e

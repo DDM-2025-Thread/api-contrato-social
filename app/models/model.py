@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum, Text
 from sqlalchemy.orm import relationship, mapped_column
 from sqlalchemy.sql import func
+from sqlalchemy.types import JSON
 from app.database import Base
 from app.models.enum import ApiKeyStatus, BillingStatus, TicketStatus
 
@@ -59,6 +60,6 @@ class ChatTicket(Base):
     id = mapped_column(Integer, primary_key=True, index=True)
     ticket_uuid = Column(String(36), unique=True, nullable=False)
     status = Column(Enum(TicketStatus), default=TicketStatus.PROCESSING, nullable=False)
-    response_json = Column(Text, nullable=True)
+    response_json = Column(JSON, nullable=True)
     error_message = Column(Text, nullable=True)
     created_at = Column(DateTime, default=func.now())
