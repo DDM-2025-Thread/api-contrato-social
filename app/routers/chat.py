@@ -9,7 +9,7 @@ router = APIRouter(prefix="/chat", tags=["chat"])
 @router.post("/upload")
 async def upload(
     pdf_file: Annotated[UploadFile, File()],
-    background_tasks: BackgroundTasks = Depends(),
+    background_tasks: BackgroundTasks = BackgroundTasks,
     db: AsyncSession = Depends(get_async_session)
 ):
     chat_service = ChatService(db)
