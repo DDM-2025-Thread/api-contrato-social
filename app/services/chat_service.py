@@ -29,18 +29,18 @@ class ChatService:
         )
         return ticket
 
-    def process_gemini_response(self, ticket: str, pdf_file_bytes: bytes):
+    async def process_gemini_response(self, ticket: str, pdf_file_bytes: bytes):
         uploaded_file = None
         try:
             uploaded_file = self.gemini_service.upload_pdf_for_processing(
                 pdf_file_bytes)
             gemini_response_dict = self.gemini_service.get_contract_data(
                 uploaded_file)
-            self.chat_repo.save_final_response(ticket, gemini_response_dict)
-            self.chat_repo.update_status(ticket, TicketStatus.COMPLETED)
+            await self.chat_repo.save_final_response(ticket, gemini_response_dict)
+            await self.chat_repo.update_status(ticket, TicketStatus.COMPLETED)
         except Exception as e:
             print(f"Erro no processamento Gemini para o ticket {ticket}: {e}")
-            self.chat_repo.update_status(
+            await self.chat_repo.update_status(
                 ticket, TicketStatus.FAILED, error_message=str(e))
         finally:
             if uploaded_file:
