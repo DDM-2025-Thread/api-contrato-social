@@ -1,14 +1,12 @@
 import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-#from app.database import Base, engine
 from app.models.model import *
 from app.routers import auth, users, apikeys, usage, billing, chat
 from app.database import init_db
 
 app = FastAPI(title="API Contratos Sociais")
 
-# método adicionado
 @app.on_event("startup")
 async def startup_event():
     await init_db()
@@ -36,8 +34,6 @@ else:
         "https://app.seusite.com.br",
     ]
 app.add_middleware(CORSMiddleware, **origins_config)
-
-# Base.metadata.create_all(bind=engine)
 
 app.include_router(auth.router)
 app.include_router(users.router)
