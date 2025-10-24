@@ -1,7 +1,8 @@
 VENV_UVICORN = venv/bin/uvicorn
 VENV_PIP = venv/bin/pip
+VENV_PYTHON = venv/bin/python
 
-.PHONY: dev prod install
+.PHONY: dev prod install check
 
 dev:
 	@echo "🚀 Iniciando servidor em modo de desenvolvimento..."
@@ -11,3 +12,6 @@ prod:
 	@ENVIRONMENT=production $(VENV_UVICORN) app.main:app --host 0.0.0.0 --port 8000
 install:
 	@$(VENV_PIP) install -r requirements.txt
+check:
+	@echo "🐍 Verificando a versão do Python no venv..."
+	@$(VENV_PYTHON) --version

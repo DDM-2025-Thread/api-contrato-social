@@ -3,7 +3,7 @@ from sqlalchemy.orm import relationship, mapped_column
 from sqlalchemy.sql import func
 from sqlalchemy.types import JSON
 from app.database import Base
-from app.models.enum import ApiKeyStatus, BillingStatus, TicketStatus
+from app.models.enum import ApiKeyStatus, BillingStatus, UserStatus, TicketStatus
 
 
 class User(Base):
@@ -13,6 +13,11 @@ class User(Base):
     name = mapped_column(String(150))
     email = Column(String(150), unique=True, index=True)
     password_hash = Column(String(255))
+    status = mapped_column(
+        Enum(UserStatus), 
+        nullable=False, 
+        default=UserStatus.ACTIVE
+    )
     api_keys = relationship("ApiKey", back_populates="user")
     created_at = Column(DateTime, default=func.now())
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
