@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, UploadFile, File, BackgroundTasks
-from sqlalchemy.ext.asyncio import AsyncSession
-from app.database import get_async_session
+from sqlalchemy.orm import Session
+from app.database import get_db
 from app.services.chat_service import ChatService
 from typing import Annotated
 
@@ -10,7 +10,7 @@ router = APIRouter(prefix="/chat", tags=["chat"])
 async def upload(
     pdf_file: Annotated[UploadFile, File()],
     background_tasks: BackgroundTasks,
-    db: AsyncSession = Depends(get_async_session)
+    db: Session = Depends(get_db)
 ):
     chat_service = ChatService(db)
     ticket = await chat_service.start_upload_process(
@@ -23,8 +23,8 @@ async def upload(
 @router.get("/getChatResponse/{ticket}")
 async def get_result(
     ticket: str,
-    db: AsyncSession = Depends(get_async_session)
+    db: Session = Depends(get_db)
 ):
     chat_service = ChatService(db)
-    response_data = await chat_service.get_chat_response_by_ticket(ticket=ticket)
+    response_data = chat_service.get_chat_response_by_ticket(ticket=ticket)
     return response_data

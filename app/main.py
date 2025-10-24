@@ -8,8 +8,8 @@ from app.database import init_db
 app = FastAPI(title="API Contratos Sociais")
 
 @app.on_event("startup")
-async def startup_event():
-    await init_db()
+def startup_event(): 
+    init_db()
 
 ENVIRONMENT = os.getenv("ENVIRONMENT", "production")
 
