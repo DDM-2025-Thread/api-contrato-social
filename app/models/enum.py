@@ -22,3 +22,8 @@ class TicketStatus(str, Enum):
     COMPLETED = "Completed"
     FAILED = "Failed"
     PENDING = "Pending"
+
+class Roles(str, Enum):
+    SUPER_ADMIN = "super_admin"
+    ADMIN = "admin"
+    USER = "user"

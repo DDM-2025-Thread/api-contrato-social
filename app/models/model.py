@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum, Text
 from sqlalchemy.orm import relationship, mapped_column
 from sqlalchemy.sql import func
 from app.database import Base
-from app.models.enum import ApiKeyStatus, BillingStatus, UserStatus, TicketStatus
+from app.models.enum import ApiKeyStatus, BillingStatus, UserStatus, TicketStatus, Roles
 
 
 class User(Base):
@@ -16,6 +16,11 @@ class User(Base):
         Enum(UserStatus), 
         nullable=False, 
         default=UserStatus.ACTIVE
+    )
+    role = mapped_column(
+        Enum(Roles), 
+        default=Roles.USER,
+        nullable=False
     )
     api_keys = relationship("ApiKey", back_populates="user")
     created_at = Column(DateTime, default=func.now())

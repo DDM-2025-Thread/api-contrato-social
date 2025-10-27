@@ -39,7 +39,12 @@ class AuthService:
         if not verify_password(password, str(user.password_hash)):
             raise HTTPException(status_code=400, detail="Senha incorreta")
 
-        access_token = create_access_token(data={"sub": user.email}, scope="user")
+        token_data = {
+            "sub": user.email,
+            "role": user.role.value
+        }
+
+        access_token = create_access_token(data=token_data, scope="user")
         
         return {
             "id": user.id,
