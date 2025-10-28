@@ -15,3 +15,7 @@ def generate(apikey_data: ApiKeyRequest, user=Depends(get_current_user), db: Ses
 @router.get("/")
 def list_all(user=Depends(get_current_user), db: Session = Depends(get_db)):
     return ApiKeysService(db).list_api_keys(user['username'])
+
+@router.delete("/revoke/{key_id}", response_model=GenericResponse)
+def revoke(key_id: int, user=Depends(get_current_user), db: Session = Depends(get_db)):
+    return ApiKeysService(db).revoke_key(user['username'], key_id)

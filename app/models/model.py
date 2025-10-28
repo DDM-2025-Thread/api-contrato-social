@@ -36,6 +36,7 @@ class ApiKey(Base):
     user = relationship("User", back_populates="api_keys")
     name = Column(String(100))
     key = Column(String(255), unique=True)
+    key_prefix = Column(String(8), unique=True)
     status = Column(Enum(ApiKeyStatus), default=ApiKeyStatus.ACTIVE)
     created_at = Column(DateTime, default=func.now())
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())

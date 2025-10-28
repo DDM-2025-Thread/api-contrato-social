@@ -18,6 +18,12 @@ class ApiKeysRepository:
 
     def find_by_user_id(self, user_id: int) -> List[ApiKey]:
         return self.db.query(ApiKey).filter(ApiKey.user_id == user_id).all()
+    
+    def find_by_id_and_user_id(self, api_key_id: int, user_id: int) -> Optional[ApiKey]:
+        return self.db.query(ApiKey).filter(
+            ApiKey.id == api_key_id,
+            ApiKey.user_id == user_id
+        ).first()
 
     def find_all(self) -> List[ApiKey]:
         return self.db.query(ApiKey).all()
