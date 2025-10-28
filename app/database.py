@@ -13,3 +13,7 @@ def get_db():
         yield db
     finally:
         db.close()
+
+def init_db():
+    Base.metadata.create_all(bind=engine)
+    print("Tabelas do banco de dados verificadas/criadas.")
