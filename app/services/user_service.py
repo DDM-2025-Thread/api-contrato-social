@@ -2,6 +2,8 @@ from fastapi import HTTPException, status
 from app.repositories.user_repository import UserRepository
 from app.schemas.user_schema import UserUpdateRequest
 from app.models.enum import UserStatus
+from app.core.security import hash_password
+from app.core.jwt import create_access_token
 
 class UserService:
     def __init__(self, db):
@@ -68,3 +70,25 @@ class UserService:
         self.user_repository.update(user_id, update_data) 
         
         return {"message": f"Usuário com ID {user_id} foi reativado."}
+    
+    def create_admin(self, name: str, email: str, password: str):
+        if self.user_repository.find_by_email(email):
+            raise HTTPException(status_code=400, detail="Usuário já existe")
+
+        new_user = self.user_repository.create({
+            "name": name,
+            "email": email,
+            "password_hash": hash_password(password)
+        })
+
+        if not new_user:
+            raise HTTPException(status_code=500, detail="Erro ao criar usuário")
+
+        access_token = create_access_token(data={"sub": new_user.email}, scope="user")
+
+        return {
+            "message": "Usuário registrado com sucesso",
+            "name": new_user.name,
+            "email": new_user.email,
+            "token": access_token
+        }

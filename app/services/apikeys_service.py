@@ -1,7 +1,9 @@
 from sqlalchemy.orm import Session
+from fastapi import HTTPException, status
 from app.repositories.api_keys_repository import ApiKeysRepository
 from app.repositories.user_repository import UserRepository
-from app.core.security import generate_api_key
+from app.core.security import generate_api_key, hash_api_key
+from app.models.enum import ApiKeyStatus
 
 MAX_API_KEYS = 3
 
@@ -20,14 +22,18 @@ class ApiKeysService:
             raise Exception("Limite de chaves API atingido.")
         
         new_key = generate_api_key()
+        hashed_key = hash_api_key(new_key)
+        key_prefix = new_key[:8]
+
         self.repository.create({
             "user_id": user.id,
             "name": apikey_data.name,
-            "key": new_key
+            "key": hashed_key,
+            "key_prefix": key_prefix
         })
         
         return {
-            "message": "API Key gerada com sucesso.",
+            "message": "API Key gerada com sucesso. Guarde-a em um local seguro, pois ela não será exibida novamente.",
             "data": {
                 "api_key": new_key
             }
@@ -51,3 +57,20 @@ class ApiKeysService:
                     ]
             }
         }
+    
+    def revoke_key(self, user_email: str, key_id: int):
+        user = self.user_repository.find_by_email(user_email)
+        if not user:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuário não encontrado.")
+
+        key = self.repository.find_by_id_and_user_id(key_id, user.id)
+
+        if not key:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Chave de API não encontrada ou não pertence a este usuário."
+            )
+
+        self.repository.update(key.id, {"status": ApiKeyStatus.REVOKED})
+
+        return {"message": "Chave de API revogada com sucesso."}
