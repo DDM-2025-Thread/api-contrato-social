@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum, Text
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum, Text, Numeric
 from sqlalchemy.orm import relationship, mapped_column
 from sqlalchemy.sql import func
 from sqlalchemy.types import JSON
@@ -24,6 +24,7 @@ class User(Base):
         nullable=False
     )
     api_keys = relationship("ApiKey", back_populates="user")
+    costs_updated = relationship("ApiCost", back_populates="updated_by")
     created_at = Column(DateTime, default=func.now())
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
     deleted_at = Column(DateTime, nullable=True)
@@ -51,7 +52,7 @@ class UsageLog(Base):
     user_id = mapped_column(ForeignKey("users.id"), nullable=False)
     endpoint = Column(String(255))
     timestamp = Column(DateTime, default=func.now())
-    cost = Column(Integer)
+    cost = Column(Numeric(3, 2))
 
 
 class Billing(Base):
@@ -74,3 +75,12 @@ class ChatTicket(Base):
     response_json = Column(JSON, nullable=True)
     error_message = Column(Text, nullable=True)
     created_at = Column(DateTime, default=func.now())
+
+class ApiCost(Base):
+    __tablename__ = "api_cost"
+
+    id = mapped_column(Integer, primary_key=True)
+    cost_per_request = mapped_column(Numeric(3, 2), nullable=False, default=1) 
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
+    updated_by_id = mapped_column(ForeignKey("users.id"), nullable=True)
+    updated_by = relationship("User", back_populates="costs_updated")
