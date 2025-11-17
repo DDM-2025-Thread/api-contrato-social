@@ -11,16 +11,16 @@ router = APIRouter(prefix="/users", tags=["users"])
 
 @router.get("/me", response_model=UserResponse)
 def find_one(user=Depends(get_current_user), db: Session = Depends(get_db)):
-    return UserService(db).find_one(user["username"])
+    return UserService(db).find_one(user["sub"])
 
 @router.patch("/me", response_model=GenericResponse)
 def update(user_update: UserUpdateRequest, user=Depends(get_current_user), db: Session = Depends(get_db)):
     print(user_update)
-    return UserService(db).update(user["username"], user_update)
+    return UserService(db).update(user["sub"], user_update)
 
 @router.delete("/me", response_model=GenericResponse)
 def delete(user=Depends(get_current_user), db: Session = Depends(get_db)):
-    return UserService(db).soft_delete(user["username"])
+    return UserService(db).soft_delete(user["sub"])
 
 # ==============================================================
 # === Endpoints de Admin

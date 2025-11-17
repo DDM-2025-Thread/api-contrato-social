@@ -10,12 +10,12 @@ router = APIRouter(prefix="/apikeys", tags=["apikeys"])
 
 @router.post("/generate", response_model=GenericResponse, status_code=status.HTTP_201_CREATED)
 def generate(apikey_data: ApiKeyRequest, user=Depends(get_current_user), db: Session = Depends(get_db)):
-    return ApiKeysService(db).create_api_key(apikey_data, user["username"])
+    return ApiKeysService(db).create_api_key(apikey_data, user["sub"])
 
 @router.get("/")
 def list_all(user=Depends(get_current_user), db: Session = Depends(get_db)):
-    return ApiKeysService(db).list_api_keys(user['username'])
+    return ApiKeysService(db).list_api_keys(user["sub"])
 
 @router.delete("/revoke/{key_id}", response_model=GenericResponse)
 def revoke(key_id: int, user=Depends(get_current_user), db: Session = Depends(get_db)):
-    return ApiKeysService(db).revoke_key(user['username'], key_id)
+    return ApiKeysService(db).revoke_key(user["sub"], key_id)
