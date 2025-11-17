@@ -47,7 +47,6 @@ class AuthService:
         access_token = create_access_token(data=token_data, scope="user")
         
         return {
-            "id": user.id,
             "name": user.name,
             "token": access_token
         }
