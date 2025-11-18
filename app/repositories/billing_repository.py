@@ -22,6 +22,12 @@ class BillingRepository:
     def find_all(self) -> List[Billing]:
         return self.db.query(Billing).all()
 
+    def find_by_user_and_period(self, user_id: int, period: str) -> Optional[Billing]:
+        return self.db.query(Billing).filter(
+            Billing.user_id == user_id,
+            Billing.period == period
+        ).first()
+
     def update(self, billing_id: int, billing_data: dict) -> Optional[Billing]:
         billing = self.find_by_id(billing_id)
         if billing:

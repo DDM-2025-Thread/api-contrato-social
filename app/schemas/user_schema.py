@@ -9,7 +9,7 @@ class UserResponse(BaseModel):
     created_at: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class UserUpdateRequest(BaseModel):
     name: Optional[str] = None
