@@ -1,7 +1,7 @@
 import os
 from sqlalchemy.orm import Session
 from app.database import engine, SessionLocal, Base
-from app.models.model import User, Roles, UserStatus 
+from app.models.model import User, Roles, UserStatus , ApiCost
 from app.core.security import hash_password
 from dotenv import load_dotenv
 
@@ -39,6 +39,17 @@ try:
             role=Roles.SUPER_ADMIN
         )
         db.add(admin_user)
+        db.commit()
+
+    cost_setting = db.query(ApiCost).filter(ApiCost.id == 1).first()
+    if not cost_setting:
+        print("Configuração de custo padrão (1 centavo) não encontrada. Criando...")
+        default_cost = ApiCost(
+            id=1,
+            cost_per_request=0.01,
+            updated_by_id=admin_user.id
+        )
+        db.add(default_cost)
         db.commit()
 finally:
     db.close()

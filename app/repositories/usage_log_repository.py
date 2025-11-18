@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from app.models.model import UsageLog
 from typing import Optional, List
+import datetime
 
 class UsageLogRepository:
     def __init__(self, db: Session):
@@ -21,6 +22,12 @@ class UsageLogRepository:
 
     def find_all(self) -> List[UsageLog]:
         return self.db.query(UsageLog).all()
+
+    def find_by_period(self, start_date: datetime.datetime, end_date: datetime.datetime) -> List[UsageLog]:
+        return self.db.query(UsageLog).filter(
+            UsageLog.timestamp >= start_date,
+            UsageLog.timestamp < end_date
+        ).all()
 
     def update(self, usage_log_id: int, usage_log_data: dict) -> Optional[UsageLog]:
         usage_log = self.find_by_id(usage_log_id)
