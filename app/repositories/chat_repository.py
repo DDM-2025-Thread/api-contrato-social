@@ -1,6 +1,6 @@
 from sqlalchemy import select, update
 from sqlalchemy.orm import Session
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 from app.models.model import ChatResponse
 from app.models.enum import TicketStatus
 
@@ -48,3 +48,6 @@ class ChatRepository:
             "user_id": chat_response.user_id,
             "error_message": chat_response.error_message
         }
+    
+    def find_chat_responses_by_user_id(self, user_id: int) -> List[ChatResponse]:
+        return self.db.query(ChatResponse).filter(ChatResponse.user_id == user_id).all()
