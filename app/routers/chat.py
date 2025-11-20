@@ -3,7 +3,8 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.core.jwt import get_current_user
 from app.services.chat_service import ChatService
-from typing import Annotated
+from typing import Annotated, List
+from app.schemas.chat_schema import ChatResponseSchema
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 
@@ -31,6 +32,7 @@ async def upload(
 async def get_result(
     ticket: str,
     db: Session = Depends(get_db),
+    response_model=ChatResponseSchema,
     _: None = Depends(get_current_user),
 ):
     chat_service = ChatService(db)
@@ -41,7 +43,8 @@ async def get_result(
 @router.get("/find-by-user")
 async def get_chats(
     user=Depends(get_current_user),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    response_model=List[ChatResponseSchema]
 ):
     chat_service = ChatService(db)
     response_data = chat_service.find_chats_by_user_email(user["sub"])
