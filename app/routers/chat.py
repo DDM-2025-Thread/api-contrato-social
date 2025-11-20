@@ -26,7 +26,7 @@ async def upload(
     return ticket
 
 
-@router.get("/getChatResponse/{ticket}")
+@router.get("/get-chat-response/{ticket}")
 async def get_result(
     ticket: str,
     db: Session = Depends(get_db),
