@@ -7,11 +7,12 @@ from typing import Annotated
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 
+
 @router.post("/upload")
 async def upload(
     pdf_file: Annotated[UploadFile, File()],
     background_tasks: BackgroundTasks,
-    user = Depends(get_current_user),
+    user=Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     chat_service = ChatService(db)
@@ -36,12 +37,12 @@ async def get_result(
     response_data = chat_service.get_chat_response_by_ticket(ticket=ticket)
     return response_data
 
-@router.get("/find-by-user/{email}")
+
+@router.get("/find-by-user")
 async def get_chats(
-    email: str,
-    db: Session = Depends(get_db),
-    _: None = Depends(get_current_user),
+    user=Depends(get_current_user),
+    db: Session = Depends(get_db)
 ):
     chat_service = ChatService(db)
-    response_data = chat_service.find_chats_by_user_email(user_email=email)
+    response_data = chat_service.find_chats_by_user_email(user["sub"])
     return response_data
