@@ -49,5 +49,5 @@ class ChatRepository:
             "error_message": chat_response.error_message
         }
     
-    def find_chat_responses_by_user_id(self, user_id: int) -> List[ChatResponse]:
+    def find_chats_by_user_id(self, user_id: int) -> List[ChatResponse]:
         return self.db.query(ChatResponse).filter(ChatResponse.user_id == user_id).all()

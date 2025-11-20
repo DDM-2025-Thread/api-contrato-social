@@ -87,11 +87,11 @@ class ChatService:
     def get_chat_response_by_ticket(self, ticket: str):
         return self.chat_repository.get_response_by_ticket(ticket)
 
-    def find_by_user(self, user_email: str) -> List[dict]:
+    def find_chats_by_user_email(self, user_email: str) -> List[dict]:
         user = self.user_repository.find_by_email(user_email)
         if not user:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail="Usuário do token não encontrado.")
-        chat_responses = self.chat_repository.find_chat_responses_by_user_id(
+        chat_responses = self.chat_repository.find_chats_by_user_id(
             user.id)
         return [{"id": chat_res.id, "ticket_uuid": chat_res.ticket_uuid, "status": chat_res.status, "created_at": chat_res.created_at, "user_id": chat_res.user_id} for chat_res in chat_responses]
