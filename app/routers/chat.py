@@ -29,7 +29,7 @@ async def upload(
 
 
 @router.get("/get-chat-response/{ticket}", response_model=ChatResponseSchema)
-async def get_result(
+def get_result(
     ticket: str,
     db: Session = Depends(get_db),
     _: None = Depends(get_current_user)
@@ -40,7 +40,7 @@ async def get_result(
 
 
 @router.get("/find-by-user", response_model=List[ChatResponseSchema])
-async def get_chats(
+def get_chats(
     user=Depends(get_current_user),
     db: Session = Depends(get_db)
 ):

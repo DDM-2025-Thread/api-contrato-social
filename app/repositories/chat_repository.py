@@ -9,10 +9,10 @@ class ChatRepository:
     def __init__(self, db: Session):
         self.db = db
 
-    def save_initial_ticket(self, ticket: str, status: str, user_id: int) -> ChatResponse:
+    def save_initial_ticket(self, ticket: str, status: TicketStatus, user_id: int) -> ChatResponse:
         chat_response = ChatResponse(
             ticket_uuid=ticket,
-            status=status,
+            status=status.value if isinstance(status, TicketStatus) else status,
             user_id=user_id
         )
         self.db.add(chat_response)
@@ -35,7 +35,7 @@ class ChatRepository:
         self.db.execute(stmt)
         self.db.commit()
 
-    def get_response_by_ticket(self, ticket: str) -> Optional[Dict[str, Any]]:
+    def get_response_by_ticket(self, ticket: str) -> Optional[ChatResponse]:
         stmt = select(ChatResponse).where(ChatResponse.ticket_uuid == ticket)
         result = self.db.execute(stmt)
         chat_response = result.scalar_one_or_none()
