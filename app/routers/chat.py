@@ -35,3 +35,13 @@ async def get_result(
     chat_service = ChatService(db)
     response_data = chat_service.get_chat_response_by_ticket(ticket=ticket)
     return response_data
+
+@router.get("/find-by-user/{email}")
+async def get_by_user(
+    email: str,
+    db: Session = Depends(get_db),
+    _: None = Depends(get_current_user),
+):
+    chat_service = ChatService(db)
+    response_data = chat_service.get_chat_response_by_ticket(user_email=email)
+    return response_data
