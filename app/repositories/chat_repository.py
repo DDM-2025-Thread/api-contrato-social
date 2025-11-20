@@ -39,15 +39,7 @@ class ChatRepository:
         stmt = select(ChatResponse).where(ChatResponse.ticket_uuid == ticket)
         result = self.db.execute(stmt)
         chat_response = result.scalar_one_or_none()
-        if chat_response is None:
-            return None
-        return {
-            "ticket": chat_response.ticket_uuid,
-            "status": chat_response.status,
-            "response": chat_response.response_json,
-            "user_id": chat_response.user_id,
-            "error_message": chat_response.error_message
-        }
-    
+        return chat_response
+
     def find_chats_by_user_id(self, user_id: int) -> List[ChatResponse]:
         return self.db.query(ChatResponse).filter(ChatResponse.user_id == user_id).all()

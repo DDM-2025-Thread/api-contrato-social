@@ -28,23 +28,21 @@ async def upload(
     return ticket
 
 
-@router.get("/get-chat-response/{ticket}")
+@router.get("/get-chat-response/{ticket}", response_model=ChatResponseSchema)
 async def get_result(
     ticket: str,
     db: Session = Depends(get_db),
-    response_model=ChatResponseSchema,
-    _: None = Depends(get_current_user),
+    _: None = Depends(get_current_user)
 ):
     chat_service = ChatService(db)
     response_data = chat_service.get_chat_response_by_ticket(ticket=ticket)
     return response_data
 
 
-@router.get("/find-by-user")
+@router.get("/find-by-user", response_model=List[ChatResponseSchema])
 async def get_chats(
     user=Depends(get_current_user),
-    db: Session = Depends(get_db),
-    response_model=List[ChatResponseSchema]
+    db: Session = Depends(get_db)
 ):
     chat_service = ChatService(db)
     response_data = chat_service.find_chats_by_user_email(user["sub"])
