@@ -104,6 +104,5 @@ class ChatService:
         if not user:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail="Usuário do token não encontrado.")
-        chat_responses = self.chat_repository.find_chats_by_user_id(
+        return self.chat_repository.find_chats_by_user_id(
             user.id)
-        return chat_responses

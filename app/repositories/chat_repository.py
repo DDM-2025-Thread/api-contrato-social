@@ -39,8 +39,7 @@ class ChatRepository:
     def get_response_by_ticket(self, ticket: str) -> Optional[ChatResponse]:
         stmt = select(ChatResponse).where(ChatResponse.ticket_uuid == ticket)
         result = self.db.execute(stmt)
-        chat_response = result.scalar_one_or_none()
-        return chat_response
+        return result.scalar_one_or_none()
 
     def find_chats_by_user_id(self, user_id: int) -> List[ChatResponse]:
         stmt = select(

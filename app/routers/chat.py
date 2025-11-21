@@ -35,8 +35,7 @@ def get_result(
     _: None = Depends(get_current_user)
 ):
     chat_service = ChatService(db)
-    response_data = chat_service.get_chat_response_by_ticket(ticket=ticket)
-    return response_data
+    return chat_service.get_chat_response_by_ticket(ticket=ticket)
 
 
 @router.get("/find-by-user", response_model=List[ChatResponseSchema])
@@ -45,5 +44,4 @@ def get_chats(
     db: Session = Depends(get_db)
 ):
     chat_service = ChatService(db)
-    response_data = chat_service.find_chats_by_user_email(user["sub"])
-    return response_data
+    return chat_service.find_chats_by_user_email(user["sub"])
