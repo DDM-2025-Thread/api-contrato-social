@@ -12,7 +12,8 @@ class ChatRepository:
     def save_initial_ticket(self, ticket: str, status: TicketStatus, user_id: int) -> ChatResponse:
         chat_response = ChatResponse(
             ticket_uuid=ticket,
-            status=status.value if isinstance(status, TicketStatus) else status,
+            status=status.value if isinstance(
+                status, TicketStatus) else status,
             user_id=user_id
         )
         self.db.add(chat_response)
@@ -42,4 +43,25 @@ class ChatRepository:
         return chat_response
 
     def find_chats_by_user_id(self, user_id: int) -> List[ChatResponse]:
-        return self.db.query(ChatResponse).filter(ChatResponse.user_id == user_id).all()
+        stmt = select(
+            ChatResponse.id,
+            ChatResponse.ticket_uuid,
+            ChatResponse.status,
+            ChatResponse.created_at,
+            ChatResponse.user_id
+        ).where(ChatResponse.user_id == user_id)
+
+        result = self.db.execute(stmt)
+
+        return [
+            {
+                "id": row.id,
+                "ticket_uuid": row.ticket_uuid,
+                "status": row.status.value if isinstance(row.status, TicketStatus) else row.status,
+                "created_at": row.created_at,
+                "user_id": row.user_id,
+                "response_json": None,
+                "error_message": None,
+            }
+            for row in result.all()
+        ]
