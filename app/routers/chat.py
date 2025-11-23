@@ -3,15 +3,17 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.core.jwt import get_current_user
 from app.services.chat_service import ChatService
-from typing import Annotated
+from typing import Annotated, List
+from app.schemas.chat_schema import ChatResponseSchema
 
 router = APIRouter(prefix="/chat", tags=["chat"])
+
 
 @router.post("/upload")
 async def upload(
     pdf_file: Annotated[UploadFile, File()],
     background_tasks: BackgroundTasks,
-    user = Depends(get_current_user),
+    user=Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     chat_service = ChatService(db)
@@ -26,12 +28,20 @@ async def upload(
     return ticket
 
 
-@router.get("/getChatResponse/{ticket}")
-async def get_result(
+@router.get("/get-response/{ticket}", response_model=ChatResponseSchema)
+def get_result(
     ticket: str,
     db: Session = Depends(get_db),
-    _: None = Depends(get_current_user),
+    _: None = Depends(get_current_user)
 ):
     chat_service = ChatService(db)
-    response_data = chat_service.get_chat_response_by_ticket(ticket=ticket)
-    return response_data
+    return chat_service.get_chat_response_by_ticket(ticket=ticket)
+
+
+@router.get("/find-by-user", response_model=List[ChatResponseSchema])
+def get_chats(
+    user=Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    chat_service = ChatService(db)
+    return chat_service.find_chats_by_user_email(user["sub"])
