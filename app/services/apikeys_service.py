@@ -50,6 +50,7 @@ class ApiKeysService:
             "data": {
                 "api_keys": [
                     {
+                        "id": key.id,
                         "name": key.name,
                         "created_at": key.created_at
                     }

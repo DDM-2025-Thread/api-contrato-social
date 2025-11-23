@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from app.models.model import ApiKey
 from typing import Optional, List
+from app.models.enum import ApiKeyStatus
 
 class ApiKeysRepository:
     def __init__(self, db: Session):
@@ -17,7 +18,10 @@ class ApiKeysRepository:
         return self.db.query(ApiKey).filter(ApiKey.id == api_key_id).first()
 
     def find_by_user_id(self, user_id: int) -> List[ApiKey]:
-        return self.db.query(ApiKey).filter(ApiKey.user_id == user_id).all()
+        return self.db.query(ApiKey).filter(
+            ApiKey.user_id == user_id, 
+            ApiKey.status == ApiKeyStatus.ACTIVE
+        ).all()
     
     def find_by_id_and_user_id(self, api_key_id: int, user_id: int) -> Optional[ApiKey]:
         return self.db.query(ApiKey).filter(
