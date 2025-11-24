@@ -38,10 +38,14 @@ class ChatService:
                                 detail="Usuário do token não encontrado.")
         user_id = user.id
 
+        file_name_full = pdf_file.filename or "sem_nome"
+        MAX_NAME_LENGTH = 120
+        pdf_name = file_name_full[:MAX_NAME_LENGTH]
+
         pdf_file_bytes = await pdf_file.read()
         ticket = self.create_ticket()
         self.chat_repository.save_initial_ticket(
-            ticket, TicketStatus.PROCESSING, user_id)
+            ticket, pdf_name, TicketStatus.PROCESSING, user_id)
         background_tasks.add_task(
             self.process_gemini_response,
             ticket=ticket,

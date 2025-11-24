@@ -9,9 +9,10 @@ class ChatRepository:
     def __init__(self, db: Session):
         self.db = db
 
-    def save_initial_ticket(self, ticket: str, status: TicketStatus, user_id: int) -> ChatResponse:
+    def save_initial_ticket(self, ticket: str, name: str, status: TicketStatus, user_id: int) -> ChatResponse:
         chat_response = ChatResponse(
             ticket_uuid=ticket,
+            name=name,
             status=status.value if isinstance(
                 status, TicketStatus) else status,
             user_id=user_id
@@ -44,6 +45,7 @@ class ChatRepository:
     def find_chats_by_user_id(self, user_id: int) -> List[ChatResponse]:
         stmt = select(
             ChatResponse.id,
+            ChatResponse.name,
             ChatResponse.ticket_uuid,
             ChatResponse.status,
             ChatResponse.created_at,
@@ -55,6 +57,7 @@ class ChatRepository:
         return [
             {
                 "id": row.id,
+                "name": row.name,
                 "ticket_uuid": row.ticket_uuid,
                 "status": row.status.value if isinstance(row.status, TicketStatus) else row.status,
                 "created_at": row.created_at,
