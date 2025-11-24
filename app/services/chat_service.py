@@ -45,7 +45,7 @@ class ChatService:
         pdf_file_bytes = await pdf_file.read()
         ticket = self.create_ticket()
         self.chat_repository.save_initial_ticket(
-            ticket, pdf_name, TicketStatus.PROCESSING, user_id)
+            ticket=ticket, name=pdf_name, status=TicketStatus.PROCESSING, user_id=user_id)
         background_tasks.add_task(
             self.process_gemini_response,
             ticket=ticket,
@@ -68,8 +68,9 @@ class ChatService:
             gemini_response_dict = self.gemini_service.get_contract_data(
                 uploaded_file)
             chat_repository.save_final_response(
-                ticket, gemini_response_dict)
-            chat_repository.update_status(ticket, TicketStatus.COMPLETED)
+                ticket=ticket, user_id=user_id, response_data=gemini_response_dict)
+            chat_repository.update_status(
+                ticket=ticket, user_id=user_id, status=TicketStatus.COMPLETED)
 
             try:
                 cost_setting = cost_repository.get()
@@ -87,7 +88,7 @@ class ChatService:
         except Exception as e:
             print(f"Erro no processamento Gemini para o ticket {ticket}: {e}")
             chat_repository.update_status(
-                ticket, TicketStatus.FAILED, error_message=str(e))
+                ticket=ticket, user_id=user_id, status=TicketStatus.FAILED, error_message=str(e))
         finally:
             db_session.close()
             if uploaded_file:
@@ -96,8 +97,13 @@ class ChatService:
                     self.gemini_service.client.files.delete(
                         name=file_name)
 
-    def get_chat_response_by_ticket(self, ticket: str):
-        chat_response = self.chat_repository.get_response_by_ticket(ticket)
+    def get_chat_response_by_ticket(self, ticket: str, user_email: str):
+        user = self.user_repository.find_by_email(user_email)
+        if not user:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                detail="Usuário do token não encontrado.")
+        chat_response = self.chat_repository.get_response_by_ticket(
+            ticket=ticket, user_id=user.id)
         if not chat_response:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail="Ticket não encontrado.")

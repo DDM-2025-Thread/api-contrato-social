@@ -22,23 +22,32 @@ class ChatRepository:
         self.db.refresh(chat_response)
         return chat_response
 
-    def update_status(self, ticket: str, status: TicketStatus, error_message: Optional[str] = None) -> None:
-        stmt = update(ChatResponse).where(ChatResponse.ticket_uuid == ticket).values(
+    def update_status(self, ticket: str, user_id: int, status: TicketStatus, error_message: Optional[str] = None) -> None:
+        stmt = update(ChatResponse).where(
+            (ChatResponse.ticket_uuid == ticket) &
+            (ChatResponse.user_id == user_id)
+        ).values(
             status=status.value,
             error_message=error_message
         )
         self.db.execute(stmt)
         self.db.commit()
 
-    def save_final_response(self, ticket: str, response_data: Dict[str, Any]) -> None:
-        stmt = update(ChatResponse).where(ChatResponse.ticket_uuid == ticket).values(
+    def save_final_response(self, ticket: str, user_id: int, response_data: Dict[str, Any]) -> None:
+        stmt = update(ChatResponse).where(
+            (ChatResponse.ticket_uuid == ticket) &
+            (ChatResponse.user_id == user_id)
+        ).values(
             response_json=response_data,
         )
         self.db.execute(stmt)
         self.db.commit()
 
-    def get_response_by_ticket(self, ticket: str) -> Optional[ChatResponse]:
-        stmt = select(ChatResponse).where(ChatResponse.ticket_uuid == ticket)
+    def get_response_by_ticket(self, ticket: str, user_id: int) -> Optional[ChatResponse]:
+        stmt = select(ChatResponse).where(
+            (ChatResponse.ticket_uuid == ticket) &
+            (ChatResponse.user_id == user_id)
+        )
         result = self.db.execute(stmt)
         return result.scalar_one_or_none()
 
