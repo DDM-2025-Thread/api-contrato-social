@@ -1,4 +1,4 @@
-from sqlalchemy import select, update
+from sqlalchemy import select, update, desc
 from sqlalchemy.orm import Session
 from typing import Optional, Dict, Any, List
 from app.models.model import ChatResponse
@@ -59,7 +59,7 @@ class ChatRepository:
             ChatResponse.status,
             ChatResponse.created_at,
             ChatResponse.user_id
-        ).where(ChatResponse.user_id == user_id)
+        ).where(ChatResponse.user_id == user_id).order_by(desc(ChatResponse.created_at))
 
         result = self.db.execute(stmt)
 
