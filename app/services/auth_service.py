@@ -28,6 +28,7 @@ class AuthService:
             "message": "Usuário registrado com sucesso",
             "name": new_user.name,
             "email": new_user.email,
+            "role": new_user.role.value,
             "token": access_token
         }
 
@@ -48,5 +49,6 @@ class AuthService:
         
         return {
             "name": user.name,
+            "role": user.role.value,
             "token": access_token
         }

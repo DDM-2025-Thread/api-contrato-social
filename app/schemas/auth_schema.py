@@ -9,6 +9,7 @@ class RegisterResponse(BaseModel):
     message: str
     name: str
     email: EmailStr
+    role: str
     token: str
     
     class Config:
@@ -20,6 +21,7 @@ class LoginRequest(BaseModel):
 
 class LoginResponse(BaseModel):
     name: str
+    role: str
     token: str
 
     class Config:
