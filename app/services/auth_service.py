@@ -22,7 +22,12 @@ class AuthService:
         if not new_user:
             raise HTTPException(status_code=500, detail="Erro ao criar usuário")
 
-        access_token = create_access_token(data={"sub": new_user.email}, scope="user")
+        token_data = {
+            "sub": new_user.email,
+            "role": new_user.role.value
+        }
+        
+        access_token = create_access_token(data=token_data, scope="user")
 
         return {
             "message": "Usuário registrado com sucesso",
