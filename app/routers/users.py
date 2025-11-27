@@ -27,12 +27,16 @@ def delete(user=Depends(get_current_user), db: Session = Depends(get_db)):
 # ==============================================================
 
 @router.delete("/{user_id}", response_model=GenericResponse)
-def hard_delete(user_id: int, db: Session = Depends(get_db), current_user=Depends(get_current_admin)):
+def hard_delete(user_id: int, db: Session = Depends(get_db), _=Depends(get_current_admin)):
     return UserService(db).hard_delete(user_id)
 
 @router.patch("/{user_id}/reactivate", response_model=GenericResponse)
-def reactivate(user_id: int, db: Session = Depends(get_db), current_user=Depends(get_current_admin)):
+def reactivate(user_id: int, db: Session = Depends(get_db), _=Depends(get_current_admin)):
     return UserService(db).reactivate(user_id)
+
+@router.get("/", response_model=list[UserResponse])
+def find_all(db: Session = Depends(get_db), user=Depends(get_current_admin)):
+    return UserService(db).find_all(user['sub'])
 
 # ==============================================================
 # === Endpoints de Super Admin

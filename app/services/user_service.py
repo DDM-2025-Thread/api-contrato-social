@@ -20,6 +20,28 @@ class UserService:
             "name": user.name,
             "created_at": user.created_at.isoformat()
         }
+        
+    def find_all(self, current_user_email: str):
+        current_user = self.user_repository.find_by_email(current_user_email)
+        
+        if not current_user:
+            raise Exception("Usuário atual não encontrado.")
+        
+        users = self.user_repository.find_all()
+        return [
+            {
+                "id": user.id,
+                "email": user.email,
+                "role": user.role,
+                "name": user.name,
+                "status": user.status,
+                "created_at": user.created_at.isoformat(),
+                "updated_at": user.updated_at.isoformat() if user.updated_at is not None else None,
+                "deleted_at": user.deleted_at.isoformat() if user.deleted_at is not None else None
+            }
+            for user in users
+            if user.id != current_user.id and user.role != "super_admin"
+        ]
     
     def update(self, username: str, user_update: UserUpdateRequest):
         sent_data = user_update.model_dump(exclude_unset=True)

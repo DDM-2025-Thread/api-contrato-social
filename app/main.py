@@ -2,7 +2,7 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.models.model import *
-from app.routers import auth, users, apikeys, usage, billing, chat
+from app.routers import auth, users, apikeys, usage, billing, chat, dashboard
 from app.database import init_db
 
 app = FastAPI(title="API Contratos Sociais")
@@ -41,7 +41,7 @@ app.include_router(apikeys.router)
 app.include_router(usage.router)
 app.include_router(billing.router)
 app.include_router(chat.router)
-
+app.include_router(dashboard.router)
 
 @app.get("/")
 def root():
