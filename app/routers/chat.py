@@ -47,7 +47,7 @@ def get_chats(
     return chat_service.find_chats_by_user_email(user_email=user_email)
 
 
-@router.delete("/delete/{ticket}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/delete/{ticket}", status_code=status.HTTP_200_OK)
 def delete(
     ticket: str,
     user=Depends(get_current_user),
@@ -56,4 +56,4 @@ def delete(
     chat_service = ChatService(db)
     user_email = user["sub"]
     chat_service.delete_by_ticket(ticket=ticket, user_email=user_email)
-    return
+    return {"message": "Chat successfully deleted"}
