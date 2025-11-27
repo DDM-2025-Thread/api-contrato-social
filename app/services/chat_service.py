@@ -116,3 +116,14 @@ class ChatService:
                                 detail="Usuário do token não encontrado.")
         return self.chat_repository.find_chats_by_user_id(
             user.id)
+
+    def delete_by_ticket(self, user_email: str, ticket: str):
+        user = self.user_repository.find_by_email(user_email)
+        if not user:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                detail="Usuário do token não encontrado.")
+        rows_deleted = self.chat_repository.delete_by_ticket(
+            ticket=ticket, user_id=user.id)
+        if rows_deleted == 0:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                detail=f"Chat com ticket '{ticket}' não encontrado para o usuário.")

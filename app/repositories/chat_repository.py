@@ -1,4 +1,4 @@
-from sqlalchemy import select, update, desc
+from sqlalchemy import select, update, desc, delete
 from sqlalchemy.orm import Session
 from typing import Optional, Dict, Any, List
 from app.models.model import ChatResponse
@@ -76,3 +76,13 @@ class ChatRepository:
             }
             for row in result.all()
         ]
+
+    def delete_by_ticket(self, ticket: str, user_id: int):
+        stmt = delete(ChatResponse).where(
+            (ChatResponse.ticket_uuid == ticket) &
+            (ChatResponse.user_id == user_id)
+        )
+        # Executa o comando de deleção e obtém a contagem de linhas afetadas
+        result = self.db.execute(stmt)
+        self.db.commit()
+        return result.rowcount
