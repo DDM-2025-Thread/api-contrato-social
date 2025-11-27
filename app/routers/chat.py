@@ -17,9 +17,7 @@ async def upload(
     db: Session = Depends(get_db)
 ):
     chat_service = ChatService(db)
-
     user_email = user["sub"]
-
     ticket = await chat_service.start_upload_process(
         pdf_file=pdf_file,
         user_email=user_email,
@@ -32,10 +30,11 @@ async def upload(
 def get_result(
     ticket: str,
     db: Session = Depends(get_db),
-    _: None = Depends(get_current_user)
+    user = Depends(get_current_user)
 ):
     chat_service = ChatService(db)
-    return chat_service.get_chat_response_by_ticket(ticket=ticket)
+    user_email = user["sub"]
+    return chat_service.get_chat_response_by_ticket(ticket=ticket, user_email=user_email)
 
 
 @router.get("/find-by-user", response_model=List[ChatResponseSchema])
@@ -44,4 +43,5 @@ def get_chats(
     db: Session = Depends(get_db)
 ):
     chat_service = ChatService(db)
-    return chat_service.find_chats_by_user_email(user["sub"])
+    user_email = user["sub"]
+    return chat_service.find_chats_by_user_email(user_email=user_email)

@@ -70,12 +70,13 @@ class ChatResponse(Base):
     __tablename__ = "chat_response"
 
     id = mapped_column(Integer, primary_key=True, index=True)
+    name = Column(String(120), nullable=False)
     ticket_uuid = Column(String(36), unique=True, nullable=False)
     status = Column(Enum(TicketStatus), default=TicketStatus.PROCESSING, nullable=False)
-    response_json = Column(JSON, nullable=True)
-    error_message = Column(Text, nullable=True)
     created_at = Column(DateTime, default=func.now())
     user_id = mapped_column(ForeignKey("users.id"), nullable=False)
+    response_json = Column(JSON, nullable=True)
+    error_message = Column(Text, nullable=True)
 
 class ApiCost(Base):
     __tablename__ = "api_cost"
